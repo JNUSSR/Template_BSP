@@ -40,12 +40,6 @@ file(GLOB_RECURSE USER_SOURCES CONFIGURE_DEPENDS
     ${CMAKE_SOURCE_DIR}/User/*.cpp
 )
 
-# Exclude duplicated legacy mirror sources to avoid multiple definition at link time.
-list(FILTER USER_SOURCES EXCLUDE REGEX ".*/User/Algorithm/alg_filter\\.cpp$")
-list(FILTER USER_SOURCES EXCLUDE REGEX ".*/User/Algorithm/alg_slope\\.cpp$")
-list(FILTER USER_SOURCES EXCLUDE REGEX ".*/User/Driver/uart_printf\\.cpp$")
-list(FILTER USER_SOURCES EXCLUDE REGEX ".*/User/Module/crt_wheelchassis\\.cpp$")
-
 file(GLOB_RECURSE USER_HEADERS CONFIGURE_DEPENDS
     ${CMAKE_SOURCE_DIR}/User/*.h
     ${CMAKE_SOURCE_DIR}/User/*.hpp

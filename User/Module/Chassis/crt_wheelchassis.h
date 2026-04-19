@@ -91,6 +91,9 @@ public:
     // 定时器回调函数，周期1ms
     virtual void TIM_1ms_Control_PeriodElapsedCallback() {};
 
+    // CAN接收回调函数
+    virtual void CAN_RxCallback(uint32_t stdId, uint8_t* data) {};
+
 protected:
     // 内部变量
     // 轮向电机角速度目标值(rad/s)
@@ -130,6 +133,9 @@ public:
     // 定时器回调函数，周期1ms，重写基类的TIM_1ms_Control_PeriodElapsedCallback
     virtual void TIM_1ms_Control_PeriodElapsedCallback() override;
 
+    // CAN接收回调函数
+    virtual void CAN_RxCallback(uint32_t stdId, uint8_t* data) override;
+
 protected :
     // 初始化相关常量
     
@@ -143,6 +149,17 @@ protected :
 
     // √2/2
     const float SQRT2_DIV_2 = 0.70710678f;
+
+    // CAN标准ID映射
+    const uint32_t Chassis_Motor_StdId[4] = {0x201, 0x202, 0x203, 0x204};
+
+    // 电机初始化ID映射
+    const Enum_CAN_Motor_ID Chassis_Motor_Id_Enum[4] = {
+        CAN_Motor_ID_0x201,
+        CAN_Motor_ID_0x202,
+        CAN_Motor_ID_0x203,
+        CAN_Motor_ID_0x204,
+    };
 
     // 内部函数
 
@@ -170,6 +187,9 @@ public:
     // 定时器回调函数，周期1ms，重写基类的TIM_1ms_Control_PeriodElapsedCallback
     virtual void TIM_1ms_Control_PeriodElapsedCallback() override;
 
+    // CAN接收回调函数
+    virtual void CAN_RxCallback(uint32_t stdId, uint8_t* data) override;
+
 protected :
     // 初始化相关常量
     
@@ -189,6 +209,17 @@ protected :
 
     // √2/2
     const float SQRT2_DIV_2 = 0.70710678f;
+
+    // CAN标准ID映射
+    const uint32_t Chassis_Motor_StdId[4] = {0x201, 0x202, 0x203, 0x204};
+
+    // 电机初始化ID映射
+    const Enum_CAN_Motor_ID Chassis_Motor_Id_Enum[4] = {
+        CAN_Motor_ID_0x201,
+        CAN_Motor_ID_0x202,
+        CAN_Motor_ID_0x203,
+        CAN_Motor_ID_0x204,
+    };
 
     // 内部函数
 
@@ -219,6 +250,9 @@ public:
     // 定时器回调函数，周期1ms，重写基类的TIM_1ms_Control_PeriodElapsedCallback
     virtual void TIM_1ms_Control_PeriodElapsedCallback() override;
 
+    // CAN接收回调函数
+    virtual void CAN_RxCallback(uint32_t stdId, uint8_t* data) override;
+
 protected:
     // 初始化相关常量
     
@@ -241,6 +275,24 @@ protected:
                                     3.0f * PI / 4.0f,
                                     5.0f * PI / 4.0f,
                                     7.0f * PI / 4.0f,};
+
+    // CAN标准ID映射
+    const uint32_t Chassis_Motor_StdId[4] = {0x201, 0x202, 0x203, 0x204};
+    const uint32_t Steering_Motor_StdId[4] = {0x205, 0x206, 0x207, 0x208};
+
+    // 电机初始化ID映射
+    const Enum_CAN_Motor_ID Chassis_Motor_Id_Enum[4] = {
+        CAN_Motor_ID_0x201,
+        CAN_Motor_ID_0x202,
+        CAN_Motor_ID_0x203,
+        CAN_Motor_ID_0x204,
+    };
+    const Enum_CAN_Motor_ID Steering_Motor_Id_Enum[4] = {
+        CAN_Motor_ID_0x205,
+        CAN_Motor_ID_0x206,
+        CAN_Motor_ID_0x207,
+        CAN_Motor_ID_0x208,
+    };
 
 
     // 内部变量

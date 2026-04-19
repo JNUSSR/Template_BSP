@@ -77,22 +77,6 @@ extern TIM_HandleTypeDef htim14;
 
 bool init_finished = false;
 
-Class_Serialplot serialplot;
-// Class_Motor_GM6020 motor_6020;
-
-float Target_Angle_3508, Now_Angle_3508, Target_Omega_3508, Now_Omega_3508;
-// float Target_Angle_6020, Now_Angle_6020, Target_Omega_6020, Now_Omega_6020, Target_Current_6020, Now_Current_6020;
-
-uint32_t Counter = 0;
-
-static char Variable_Assignment_List[][SERIALPLOT_RX_VARIABLE_ASSIGNMENT_MAX_LENGTH] = {
-    //电机调PID
-    "po",
-    "io",
-    "do",
-    "fo",
-};
-
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -106,67 +90,6 @@ void TIM14_Callback(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
-/**
- * @brief CAN报文回调函数
- *
- * @param Rx_Buffer CAN接收的信息结构体
- */
-void CAN_Motor_Call_Back(Struct_CAN_Rx_Buffer *Rx_Buffer)
-{
-  switch (Rx_Buffer->Header.StdId)
-  {
-    case (0x201):
-    {
-      DJI_M3508_CAN_RxCpltCallback(Rx_Buffer->Data);
-      break;
-    }
-    case (0x00):
-    {
-      J4310_CAN_RxCpltCallback(Rx_Buffer->Data);
-      break;
-    }
-    default:
-    {
-      break;
-    }
-  }
-}
-
-/**
- * @brief HAL库UART接收DMA空闲中断
- *
- * @param huart UART编号
- * @param Size 长度
- */
-void UART_Serialplot_Call_Back(uint8_t *Buffer, uint16_t Length)
-{
-    serialplot.UART_RxCpltCallback(Buffer);
-    switch (serialplot.Get_Variable_Index())
-    {
-        // 电机调PID
-        // case(0):
-        // {
-        //     motor_3508.PID_Omega.Set_K_P(serialplot.Get_Variable_Value());
-        // }
-        // break;
-        // case(1):
-        // {
-        //     motor_3508.PID_Omega.Set_K_I(serialplot.Get_Variable_Value());
-        // }
-        // break;
-        // case(2):
-        // {
-        //     motor_3508.PID_Omega.Set_K_D(serialplot.Get_Variable_Value());
-        // }
-        // break;
-        // case(3):
-        // {
-        //     motor_3508.PID_Omega.Set_K_F(serialplot.Get_Variable_Value());
-        // }
-        // break;
-    }
-}
 
 /* USER CODE END 0 */
 
@@ -205,21 +128,6 @@ int main(void)
   MX_USART6_UART_Init();
   /* USER CODE BEGIN 2 */
 
-  BSP_Init(BSP_DC24_LU_ON | BSP_DC24_LD_ON | BSP_DC24_RU_ON | BSP_DC24_RD_ON);
-  CAN_Init(&hcan1, CAN_Motor_Call_Back);
-  UART_Init(&huart2, UART_Serialplot_Call_Back, SERIALPLOT_RX_VARIABLE_ASSIGNMENT_MAX_LENGTH);
-
-  serialplot.Init(&huart2, 6, (char **)Variable_Assignment_List);
-
-  DJI_M3508_Task_Init();
-
-    // motor_6020.PID_Torque.Init(0.8f, 100.0f, 0.0f, 0.0f, 30000.0f, 30000.0f);
-    // motor_6020.PID_Omega.Init(500.0f, 2000.0f, 0.0f, 0.0f, 1000.0f, 1000.0f);
-    // motor_6020.PID_Angle.Init(12.0f, 0.0f, 0.0f, 0.0f, 4.0f * PI, 4.0f * PI);
-    // motor_6020.Init(&hcan1, CAN_Motor_ID_0x205, Control_Method_ANGLE);
-
-  J4310_Task_Init();
-
   // 注册TIM14的回调函数用于系统时基
   TIM_Init(&htim14, TIM14_Callback);
 
@@ -241,8 +149,6 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    //延时1ms
-    HAL_Delay(0); 
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

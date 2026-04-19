@@ -24,14 +24,14 @@ void Class_Chassis_Omni::Init()
     // PID初始化
    for (int i = 0; i < 4; i++)
     {
-        Chassis_Motor[i].PID_Omega.Init(83.3f, 97.3f, 0.0f, 0.0f, 10000.0f, 12000.0f); 
+        Chassis_Motor[i].PID_Omega.Init(450.0f, 279.3f, 0.0f, 0.0f, 10000.0f, 10000.0f); 
     }
     
     // 电机初始化
-    Chassis_Motor[0].Init(&hcan1, CAN_Motor_ID_0x201, Control_Method_OMEGA, 19.0f, 20.0f);
-    Chassis_Motor[1].Init(&hcan1, CAN_Motor_ID_0x202, Control_Method_OMEGA, 19.0f, 20.0f);
-    Chassis_Motor[2].Init(&hcan1, CAN_Motor_ID_0x203, Control_Method_OMEGA, 19.0f, 20.0f);
-    Chassis_Motor[3].Init(&hcan1, CAN_Motor_ID_0x204, Control_Method_OMEGA, 19.0f, 20.0f);
+    for (int i = 0; i < 4; i++)
+    {
+        Chassis_Motor[i].Init(&hcan1, Chassis_Motor_Id_Enum[i], Control_Method_OMEGA, 19.0f, 20.0f);
+    }
 }
 
 /**
@@ -45,6 +45,18 @@ void Class_Chassis_Omni::TIM_1ms_Control_PeriodElapsedCallback()
     Kinematics_Inverse_Resolution();
 
     Output_To_Motor();
+}
+
+void Class_Chassis_Omni::CAN_RxCallback(uint32_t stdId, uint8_t* data)
+{
+    for (int i = 0; i < 4; i++)
+    {
+        if (stdId == Chassis_Motor_StdId[i])
+        {
+            Chassis_Motor[i].CAN_RxCpltCallback(data);
+            return;
+        }
+    }
 }
 
 /**
@@ -70,10 +82,10 @@ void Class_Chassis_Omni::Update_Now_State_From_Motor_Feedback()
 void Class_Chassis_Omni::Kinematics_Inverse_Resolution()
 { 
     // 全向轮运动学逆解 Vx、Vy m/s 转 rad/s；Wz rad/s 转 rad/s
-    Target_Wheel_Omega[0] = (-Target_Velocity_Y * SQRT2_DIV_2 - Target_Velocity_X * SQRT2_DIV_2 - Target_Omega * Chassis_L)/Wheel_Radius;
-    Target_Wheel_Omega[1] = (+Target_Velocity_Y * SQRT2_DIV_2 - Target_Velocity_X * SQRT2_DIV_2 - Target_Omega * Chassis_L)/Wheel_Radius;
-    Target_Wheel_Omega[2] = (+Target_Velocity_Y * SQRT2_DIV_2 + Target_Velocity_X * SQRT2_DIV_2 - Target_Omega * Chassis_L)/Wheel_Radius;
-    Target_Wheel_Omega[3] = (-Target_Velocity_Y * SQRT2_DIV_2 + Target_Velocity_X * SQRT2_DIV_2 - Target_Omega * Chassis_L)/Wheel_Radius;
+    Target_Wheel_Omega[0] = (-Target_Velocity_Y * SQRT2_DIV_2 - Target_Velocity_X * SQRT2_DIV_2 + Target_Omega * Chassis_L)/Wheel_Radius;
+    Target_Wheel_Omega[1] = (+Target_Velocity_Y * SQRT2_DIV_2 - Target_Velocity_X * SQRT2_DIV_2 + Target_Omega * Chassis_L)/Wheel_Radius;
+    Target_Wheel_Omega[2] = (+Target_Velocity_Y * SQRT2_DIV_2 + Target_Velocity_X * SQRT2_DIV_2 + Target_Omega * Chassis_L)/Wheel_Radius;
+    Target_Wheel_Omega[3] = (-Target_Velocity_Y * SQRT2_DIV_2 + Target_Velocity_X * SQRT2_DIV_2 + Target_Omega * Chassis_L)/Wheel_Radius;
 }
 
 /**
@@ -105,19 +117,19 @@ void Class_Chassis_Mecanum::Init()
     {
         if (i == 0 || i == 2) // 前左和后右轮
         {
-            Chassis_Motor[i].PID_Omega.Init(83.3f, 97.3f, 0.0f, 0.0f, 10000.0f, 12000.0f);
+            Chassis_Motor[i].PID_Omega.Init(160.3f, 120.3f, 0.0f, 0.0f, 10000.0f, 12000.0f);
         }
         else // 前右和后左轮
         {
-            Chassis_Motor[i].PID_Omega.Init(83.3f, 97.3f, 0.0f, 0.0f, 10000.0f, 12000.0f);
+            Chassis_Motor[i].PID_Omega.Init(160.3f, 120.3f, 0.0f, 0.0f, 10000.0f, 12000.0f);
         }    
     }
     
     // 电机初始化
-    Chassis_Motor[0].Init(&hcan1, CAN_Motor_ID_0x201, Control_Method_OMEGA, 19.0f, 20.0f);
-    Chassis_Motor[1].Init(&hcan1, CAN_Motor_ID_0x202, Control_Method_OMEGA, 19.0f, 20.0f);
-    Chassis_Motor[2].Init(&hcan1, CAN_Motor_ID_0x203, Control_Method_OMEGA, 19.0f, 20.0f);
-    Chassis_Motor[3].Init(&hcan1, CAN_Motor_ID_0x204, Control_Method_OMEGA, 19.0f, 20.0f);
+    for (int i = 0; i < 4; i++)
+    {
+        Chassis_Motor[i].Init(&hcan1, Chassis_Motor_Id_Enum[i], Control_Method_OMEGA, 19.0f, 20.0f);
+    }
 }
 
 /**
@@ -132,6 +144,18 @@ void Class_Chassis_Mecanum::TIM_1ms_Control_PeriodElapsedCallback()
 
     Output_To_Motor();
 }   
+
+void Class_Chassis_Mecanum::CAN_RxCallback(uint32_t stdId, uint8_t* data)
+{
+    for (int i = 0; i < 4; i++)
+    {
+        if (stdId == Chassis_Motor_StdId[i])
+        {
+            Chassis_Motor[i].CAN_RxCpltCallback(data);
+            return;
+        }
+    }
+}
 
 /**
  * @brief 由电机反馈更新底盘当前状态(麦轮)
@@ -206,16 +230,16 @@ void Class_Chassis_Steering::Init()
     
     // 电机初始化
     // 舵轮电机ID 0x205~0x208，控制方式角度控制，减速比和最大扭矩没改
-    Steering_Motor[0].Init(&hcan1, CAN_Motor_ID_0x205, Control_Method_ANGLE, 19.0f, 20.0f);
-    Steering_Motor[1].Init(&hcan1, CAN_Motor_ID_0x206, Control_Method_ANGLE, 19.0f, 20.0f);
-    Steering_Motor[2].Init(&hcan1, CAN_Motor_ID_0x207, Control_Method_ANGLE, 19.0f, 20.0f);
-    Steering_Motor[3].Init(&hcan1, CAN_Motor_ID_0x208, Control_Method_ANGLE, 19.0f, 20.0f);
+    for (int i = 0; i < 4; i++)
+    {
+        Steering_Motor[i].Init(&hcan1, Steering_Motor_Id_Enum[i], Control_Method_ANGLE, 19.0f, 20.0f);
+    }
 
     // 轮向电机ID 0x201~0x204，控制方式速度控制
-    Chassis_Motor[0].Init(&hcan1, CAN_Motor_ID_0x201, Control_Method_OMEGA, 19.0f, 20.0f);
-    Chassis_Motor[1].Init(&hcan1, CAN_Motor_ID_0x202, Control_Method_OMEGA, 19.0f, 20.0f);
-    Chassis_Motor[2].Init(&hcan1, CAN_Motor_ID_0x203, Control_Method_OMEGA, 19.0f, 20.0f);
-    Chassis_Motor[3].Init(&hcan1, CAN_Motor_ID_0x204, Control_Method_OMEGA, 19.0f, 20.0f);
+    for (int i = 0; i < 4; i++)
+    {
+        Chassis_Motor[i].Init(&hcan1, Chassis_Motor_Id_Enum[i], Control_Method_OMEGA, 19.0f, 20.0f);
+    }
 }
 
 /**
@@ -229,6 +253,23 @@ void Class_Chassis_Steering::TIM_1ms_Control_PeriodElapsedCallback()
     Kinematics_Inverse_Resolution();
 
     Output_To_Motor();
+}
+
+void Class_Chassis_Steering::CAN_RxCallback(uint32_t stdId, uint8_t* data)
+{
+    for (int i = 0; i < 4; i++)
+    {
+        if (stdId == Chassis_Motor_StdId[i])
+        {
+            Chassis_Motor[i].CAN_RxCpltCallback(data);
+            return;
+        }
+        if (stdId == Steering_Motor_StdId[i])
+        {
+            Steering_Motor[i].CAN_RxCpltCallback(data);
+            return;
+        }
+    }
 }
 
 /**
