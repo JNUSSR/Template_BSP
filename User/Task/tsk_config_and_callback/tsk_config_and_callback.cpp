@@ -7,7 +7,6 @@
  */
 
 #include "tsk_config_and_callback.h"
-
 #include "main.h"
 #include "drv_bsp.h"
 #include "drv_can.h"
@@ -52,7 +51,7 @@ static void CAN_Motor_Call_Back(Struct_CAN_Rx_Buffer *Rx_Buffer)
 void Task_Init(void)
 {
 	BSP_Init(BSP_DC24_LU_ON | BSP_DC24_LD_ON | BSP_DC24_RU_ON | BSP_DC24_RD_ON);
-  	CAN_Init(&hcan1, CAN_Motor_Call_Back);
+  CAN_Init(&hcan1, CAN_Motor_Call_Back);
 
 	// 电机任务函数的初始化
 	DJI_M3508_Task_Init();
